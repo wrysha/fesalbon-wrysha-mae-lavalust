@@ -4,6 +4,7 @@
 # Environment
 .env
 !.env.example
+setup-lab4-aiven.ps1
 
 # Dependencies
 vendor/

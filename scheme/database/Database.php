@@ -268,6 +268,21 @@ class Database {
             PDO::ATTR_EMULATE_PREPARES   => false,
         );
 
+        $ssl_ca = $database_config['ssl_ca'] ?? '';
+        $ssl_verify_server_cert = $database_config['ssl_verify_server_cert'] ?? true;
+
+        if ($driver === 'mysql' && $ssl_ca !== '') {
+            if (!is_file($ssl_ca)) {
+                throw new PDOException("MySQL CA certificate was not found: {$ssl_ca}");
+            }
+
+            $options[PDO::MYSQL_ATTR_SSL_CA] = $ssl_ca;
+
+            if (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')) {
+                $options[PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = $ssl_verify_server_cert;
+            }
+        }
+
         try {
             $this->db = new PDO($dsn, $username, $password, $options);
             $this->driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
